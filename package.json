@@ -1,0 +1,11 @@
+{
+  "name": "hala-net-portal-v2",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node tests/portal.test.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.0"
+  }
+}
