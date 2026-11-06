@@ -1,1 +1,27 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102b2a"><title>هلا نت | مساحة اتصالك</title><link rel="stylesheet" href="assets/portal.css"><script src="portal-config.js" defer></script><script src="assets/portal.js" defer></script></head><body><header class="topbar"><a class="brand" href="login.html" aria-label="الرئيسية"><span class="brandmark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 12a18 18 0 0 1 24 0M8 17a12 12 0 0 1 16 0M12 22a6 6 0 0 1 8 0"/><circle cx="16" cy="27" r="1"/></svg></span><span data-name>هلا نت</span><small>HALA / NET</small></a><nav aria-label="التنقل"><button data-open="packages">الباقات</button><button data-open="sales">نقاط البيع</button><button data-open="help">المساعدة <span>↗</span></button></nav><button class="theme" id="theme" aria-label="تغيير المظهر">◐</button></header><main class="account-layout"><section class="account-intro"><div class="eyebrow">إلى لقاء قريب</div><h1>نهاية جلسة.<br><em>وبداية جديدة.</em></h1><p class="muted">شكراً لأنك اخترت <span data-name>هلا نت</span>.</p></section><section class="connect-card"><span class="eyebrow">ملخّص الجلسة</span><h2>تم تسجيل خروجك</h2><dl class="stats"><div><dt>مدة الاتصال</dt><dd>$(uptime)</dd></div><div><dt>التنزيل</dt><dd>$(bytes-out-nice)</dd></div><div><dt>الرفع</dt><dd>$(bytes-in-nice)</dd></div></dl><a class="primary" href="$(link-login)">العودة لتسجيل الدخول ←</a><button class="secondary" id="forget">حذف الكروت المحفوظة</button></section></main><footer><span>قريبون منك. أينما اتصلت.</span><span data-name>هلا نت</span> <span class="version">PORTAL / 02</span></footer><dialog id="sheet" aria-labelledby="sheet-title"><div class="dialog-head"><h2 id="sheet-title"></h2><button id="close-sheet" aria-label="إغلاق">×</button></div><div id="sheet-content"></div></dialog><div class="toast" id="toast" role="status" hidden></div></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101c26">
+  <title>هلا نت | اتصال على كيفك</title>
+  <link rel="stylesheet" href="assets/portal.css">
+  <script src="portal-config.js" defer></script>
+  <script src="assets/chap.js" defer></script>
+  <script src="assets/jsqr.js" defer></script>
+  <script src="assets/portal.js" defer></script>
+</head>
+<body>
+<div class="portal-shell">
+<header class="topbar">
+  <a class="brand" href="login.html" aria-label="الصفحة الرئيسية"><svg class="icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.5a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0M8.5 15.5a5.5 5.5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/></svg><span data-name>هلا نت</span></a>
+  <div class="top-actions"><span class="network-label">HOTSPOT</span><button class="icon-button" id="theme" type="button" aria-label="تغيير المظهر" aria-pressed="false"><svg class="icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 13A9 9 0 0 1 11 3.2 9 9 0 1 0 20.8 13Z"/></svg></button></div>
+</header><main><section class="page-intro"><p class="eyebrow">إلى لقاء قريب</p><h1>نورتنا، <em>كالعادة.</em></h1><p class="muted">نلقاك في اتصال جديد.</p></section><section class="connect-card account-card"><div class="card-heading"><span class="eyebrow">تم تسجيل الخروج</span><svg class="icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></div><h2>ملخّص جلستك</h2><dl class="stats"><div><dt>مدة الاتصال</dt><dd>$(uptime)</dd></div><div><dt>التنزيل</dt><dd>$(bytes-out-nice)</dd></div><div><dt>الرفع</dt><dd>$(bytes-in-nice)</dd></div></dl><a class="primary" href="$(link-login)"><span>اتصال جديد</span><svg class="icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6 6-6-6 6-6"/></svg></a><button class="secondary" type="button" id="forget">حذف الكروت المحفوظة</button></section></main><footer class="footer"><span data-name>هلا نت</span><span>اتصال على كيفك.</span><small>PORTAL / 02.1</small></footer>
+</div>
+<dialog id="sheet" aria-labelledby="sheet-title">
+  <div class="dialog-head"><div><span class="eyebrow">هلا بك</span><h2 id="sheet-title"></h2></div><button class="icon-button" id="close-sheet" type="button" aria-label="إغلاق النافذة"><svg class="icon " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></div>
+  <div id="sheet-content"></div>
+</dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

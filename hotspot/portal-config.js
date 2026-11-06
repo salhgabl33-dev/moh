@@ -23,7 +23,7 @@ window.portalConfig = {
     },
     {
       "value": "8M/16M",
-      "name": "سرعة عالية جدآ",
+      "name": "سرعة فائقة",
       "default": false,
       "visible": true
     }
@@ -84,5 +84,6 @@ window.portalConfig = {
   ],
   "streamUrl": "http://192.168.88.2:8888/live/stream/",
   "externalTvUrl": "https://starzplay.com/ar/freetv",
-  "updateBlockingEnabled": true
+  "updateBlockingEnabled": true,
+  "defaultTheme": "dark"
 };

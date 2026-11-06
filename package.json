@@ -1,11 +1,13 @@
 {
   "name": "hala-net-portal-v2",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
-    "test": "node tests/portal.test.cjs"
+    "test": "node tests/portal.test.cjs",
+    "package": "python3 scripts/build-package.py"
   },
   "devDependencies": {
-    "jsdom": "^31.0.0"
+    "jsdom": "^31.0.0",
+    "qrcode": "^1.5.4"
   }
 }
