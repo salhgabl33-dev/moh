@@ -207,3 +207,11 @@ dialog::backdrop { background: #091520c9; backdrop-filter: blur(5px); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Five-card wallet: full numbers can be recovered on the owner's device. */
+.wallet-count { font: 9px Arial, sans-serif; background: var(--surface-raised); color: var(--muted); padding: 4px 5px; border-radius: 6px; }
+.wallet-row { display: flex; gap: 8px; align-items: stretch; margin-bottom: 10px; }
+.wallet-row .saved-card { margin: 0; flex: 1; min-width: 0; }
+.wallet-number { display: block; text-align: right; font-size: 17px; overflow-wrap: anywhere; }
+.saved-card small { display: block; font-size: 10px; color: var(--muted); margin-top: 7px; }
+.wallet-remove { flex-shrink: 0; width: 44px; border: 1px solid var(--line); border-radius: 12px; font: 24px Arial, sans-serif; color: var(--muted); }

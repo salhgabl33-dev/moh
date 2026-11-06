@@ -7,7 +7,7 @@ const QRCode = require('qrcode');
 const root = path.join(__dirname, '../hotspot');
 let checks = 0;
 
-function open({ page = 'login.html', preview = false, chap = false, blocked = false, error = '', before } = {}) {
+function open({ page = 'login.html', preview = false, chap = false, blocked = false, error = '', account = '123456789', before } = {}) {
   let html = fs.readFileSync(path.join(root, preview ? 'preview.html' : page), 'utf8')
     .replace(/\$\(if chap-id\)[\s\S]*?\$\(endif\)/g, '')
     .replaceAll('$(link-login-only)', 'http://router.test/login')
@@ -15,7 +15,8 @@ function open({ page = 'login.html', preview = false, chap = false, blocked = fa
     .replaceAll('$(link-logout)', 'http://router.test/logout')
     .replaceAll('$(link-login)', 'http://router.test/login')
     .replaceAll('$(error)', error)
-    .replaceAll('$(username)', '123456789')
+    .replaceAll('$(username)', account)
+    .replaceAll('$(logged-in)', 'yes')
     .replaceAll('$(domain)', '4M/8M|*yes**')
     .replaceAll('$(remain-bytes-total)', '1048576')
     .replaceAll('$(bytes-out)', '2097152')
@@ -137,7 +138,8 @@ async function main() {
     assert.equal(payload.get('domain'), value + '|' + (updates ? '*yes**' : '*no**'));
     assert.equal(payload.get('username'), '123&xyz');
     assert.equal(d.getElementById('login-form').method, 'post');
-    assert.deepEqual(JSON.parse(w.localStorage.getItem('hala.portal.v2.cards')), ['123&xyz']);
+    assert.equal(w.localStorage.getItem('hala.portal.v2.cards'), null, 'Do not save unconfirmed logins');
+    assert.equal(JSON.parse(w.sessionStorage.getItem('hala.portal.v2.pending-login')).card, '123&xyz');
     const expectedPassword = chap ? crypto.createHash('md5').update(Buffer.from('\x01\x00\x80challenge', 'latin1')).digest('hex') : '';
     assert.equal(payload.get('password'), expectedPassword, 'Username-only auth must use an empty password');
     assert.notEqual(payload.get('password'), payload.get('username'));
@@ -176,7 +178,13 @@ async function main() {
     assert.equal(d.getElementById('remember').checked, true);
     d.getElementById('remember').checked = false;
     submit(d);
-    assert.deepEqual(JSON.parse(w.localStorage.getItem('hala.portal.v2.cards')), ['987654']);
+    assert.deepEqual(JSON.parse(w.localStorage.getItem('hala.portal.v2.cards')), ['123456', '987654']);
+    const confirmed = open({ page: 'status.html', account: '123456', before(next) {
+      next.localStorage.setItem('hala.portal.v2.cards', w.localStorage.getItem('hala.portal.v2.cards'));
+      next.sessionStorage.setItem('hala.portal.v2.pending-login', w.sessionStorage.getItem('hala.portal.v2.pending-login'));
+    } });
+    assert.deepEqual(JSON.parse(confirmed.w.localStorage.getItem('hala.portal.v2.cards')), ['987654']);
+    confirmed.close();
     checks++; close();
   }
   for (const setup of [
@@ -218,6 +226,74 @@ async function main() {
     d.getElementById('forget').click();
     assert.deepEqual(JSON.parse(w.localStorage.getItem('hala.portal.v2.cards')), []);
     checks++; close();
+  }
+  // Follow actual submit -> authenticated status transitions with tab-local pending state.
+  function loginIntoWallet(card, cards, remember = true, statusAccount = card) {
+    const login = open({ before(w) { w.localStorage.setItem('hala.portal.v2.cards', JSON.stringify(cards)); } });
+    login.d.getElementById('card').value = card;
+    login.d.getElementById('remember').checked = remember;
+    assert.equal(submit(login.d).defaultPrevented, false);
+    assert.deepEqual(JSON.parse(login.w.localStorage.getItem('hala.portal.v2.cards')), cards);
+    const confirmed = open({ page: 'status.html', account: statusAccount, before(w) {
+      w.localStorage.setItem('hala.portal.v2.cards', login.w.localStorage.getItem('hala.portal.v2.cards'));
+      w.sessionStorage.setItem('hala.portal.v2.pending-login', login.w.sessionStorage.getItem('hala.portal.v2.pending-login'));
+    } });
+    const result = JSON.parse(confirmed.w.localStorage.getItem('hala.portal.v2.cards'));
+    assert.equal(confirmed.w.sessionStorage.getItem('hala.portal.v2.pending-login'), null);
+    login.close(); confirmed.close(); return result;
+  }
+  {
+    let cards = [];
+    for (const card of ['100001', '100002', '100003', '100004', '100005', '100006']) cards = loginIntoWallet(card, cards);
+    assert.deepEqual(cards, ['100006', '100005', '100004', '100003', '100002']);
+    cards = loginIntoWallet('100004', cards);
+    assert.deepEqual(cards, ['100004', '100006', '100005', '100003', '100002']);
+    assert.deepEqual(loginIntoWallet('100007', cards, true, 'other-account'), cards);
+    const wallet = open({ before(w) { w.localStorage.setItem('hala.portal.v2.cards', JSON.stringify(cards)); } });
+    assert.equal(wallet.d.getElementById('remember').checked, true);
+    assert.equal(wallet.d.getElementById('wallet-count').textContent, '5/5');
+    wallet.d.getElementById('saved').click();
+    assert.equal(wallet.d.querySelectorAll('.saved-card').length, 5);
+    assert.equal(wallet.d.querySelector('.wallet-number').textContent, '100004');
+    wallet.d.querySelector('.wallet-remove').click();
+    assert.equal(wallet.d.getElementById('wallet-count').textContent, '4/5');
+    assert.equal(wallet.d.querySelectorAll('.saved-card').length, 4);
+    wallet.d.querySelector('.saved-card').click();
+    assert.equal(wallet.d.getElementById('card').value, '100006');
+    assert.equal(wallet.d.getElementById('submit').disabled, false);
+    wallet.d.getElementById('saved').click();
+    wallet.d.querySelector('#sheet-content > .secondary').click();
+    assert.deepEqual(JSON.parse(wallet.w.localStorage.getItem('hala.portal.v2.cards')), []);
+    wallet.close(); checks++;
+  }
+  {
+    const pending = JSON.stringify({card: '123456', remember: true, time: Date.now()});
+    const failed = open({ error: 'invalid username or password', before(w) {
+      w.sessionStorage.setItem('hala.portal.v2.pending-login', pending);
+    } });
+    assert.equal(failed.w.sessionStorage.getItem('hala.portal.v2.pending-login'), null);
+    assert.equal(failed.w.localStorage.getItem('hala.portal.v2.cards'), null);
+    failed.close(); checks++;
+  }
+  {
+    const legacy = {usernames: ['100001','100002','100003','100004','100005','100006'], passwords: ['legacy-secret']};
+    const wallet = open({before(w) { w.localStorage.setItem('usernamesAndPasswords', JSON.stringify(legacy)); }});
+    assert.deepEqual(JSON.parse(wallet.w.localStorage.getItem('hala.portal.v2.cards')), ['100006','100005','100004','100003','100002']);
+    assert(!wallet.w.localStorage.getItem('hala.portal.v2.cards').includes('legacy-secret'));
+    wallet.close();
+    const cleared = open({before(w) {
+      w.localStorage.setItem('hala.portal.v2.cards', '[]');
+      w.localStorage.setItem('usernamesAndPasswords', JSON.stringify(legacy));
+    }});
+    assert.deepEqual(JSON.parse(cleared.w.localStorage.getItem('hala.portal.v2.cards')), [], 'Never restore a wallet the owner emptied');
+    cleared.close(); checks++;
+  }
+  {
+    const expired = open({page:'status.html', before(w) {
+      w.sessionStorage.setItem('hala.portal.v2.pending-login', JSON.stringify({card:'123456789',remember:true,time:Date.now()-16*60*1000}));
+    }});
+    assert.equal(expired.w.localStorage.getItem('hala.portal.v2.cards'), null);
+    expired.close(); checks++;
   }
   await testQR('١٢٣٤٥٦', '123456');
   await testQR('http://router.test/login?username=123%26ABC&password=ignored', '123&ABC', true);

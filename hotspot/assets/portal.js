@@ -5,6 +5,7 @@
   var preview = document.body.dataset.preview === 'true';
   var memoryKey = 'hala.portal.v2.cards';
   var preferenceKey = 'hala.portal.v2.options';
+  var pendingKey = 'hala.portal.v2.pending-login';
   var toastTimer;
   var reconnectTimer;
   var $ = function (id) { return document.getElementById(id); };
@@ -51,6 +52,53 @@
     }).replace(/\s/g, '');
   }
 
+  function migrateWallet() {
+    if (preview || read(memoryKey, null) !== null) return;
+    var legacy = read('usernamesAndPasswords', null);
+    if (!legacy || !Array.isArray(legacy.usernames)) return;
+    var cards = [];
+    legacy.usernames.slice().reverse().forEach(function (card) {
+      if (typeof card !== 'string') return;
+      card = normalize(card);
+      if (card && card.length <= 128 && cards.indexOf(card) === -1) cards.push(card);
+    });
+    // Migrate usernames only; never copy old password fields.
+    write(memoryKey, cards.slice(0, 5));
+  }
+
+  function walletCards() {
+    var unique = [];
+    array(read(memoryKey, [])).forEach(function (card) {
+      if (typeof card !== 'string') return;
+      card = normalize(card);
+      if (card && card.length <= 128 && unique.indexOf(card) === -1) unique.push(card);
+    });
+    return unique.slice(0, 5);
+  }
+
+  function clearPending() {
+    try { sessionStorage.removeItem(pendingKey); } catch (error) { /* Storage may be disabled. */ }
+  }
+
+  function updateWalletCount() {
+    if ($('wallet-count')) $('wallet-count').textContent = walletCards().length + '/5';
+  }
+
+  function confirmWalletLogin(account) {
+    var pending;
+    try { pending = JSON.parse(sessionStorage.getItem(pendingKey)); }
+    catch (error) { return; }
+    clearPending();
+    if (!pending || typeof pending.card !== 'string' ||
+        typeof pending.time !== 'number' || Date.now() - pending.time < 0 ||
+        Date.now() - pending.time > 15 * 60 * 1000 || pending.card !== normalize(account)) return;
+    var cards = walletCards().filter(function (card) { return card !== pending.card; });
+    if (pending.remember === true) cards.unshift(pending.card);
+    if (!write(memoryKey, cards.slice(0, 5))) {
+      notify('تم الدخول، لكن المتصفح لا يسمح بحفظ الكرت في المحفظة.');
+    }
+  }
+
   function dialog(title) {
     $('sheet-title').textContent = title;
     $('sheet-content').replaceChildren();
@@ -95,7 +143,7 @@
       box = dialog('اتصالك يبدأ من هنا');
       box.appendChild(node('p', 'اختر السرعة التي تناسبك، ثم أدخل رقم الكرت فقط واضغط «دخول الإنترنت».', 'sheet-note'));
       list(config.notes, box);
-      box.appendChild(node('p', 'لحفظ رقم الكرت فعّل «حفظ الكرت على جهازي». لا تستخدم الحفظ على جهاز مشترك.'));
+      box.appendChild(node('p', 'المحفظة تحفظ آخر خمسة كروت بعد نجاح الدخول، والأحدث أولاً. يمكنك إيقاف الحفظ على جهاز مشترك.'));
       box.appendChild(node('p', 'لتغيير السرعة بعد الدخول، سجّل الخروج ثم اختر سرعتك الجديدة وادخل بالكرت نفسه.'));
       if (config.externalTvUrl) {
         var link = node('a', 'التلفزيون عبر الإنترنت ↗', 'secondary');
@@ -137,7 +185,10 @@
     if (event.key === 'Escape' && $('sheet').open) closeDialog();
   });
 
+  migrateWallet();
+
   if ($('forget')) $('forget').addEventListener('click', function () {
+    clearPending();
     if (write(memoryKey, [])) notify('تم حذف الكروت المحفوظة من هذا المتصفح');
     else notify('تعذّر تعديل تخزين المتصفح. احذف بيانات الموقع من إعدادات المتصفح.');
   });
@@ -156,6 +207,7 @@
   });
   if ($('account-card')) {
     var account = $('account-card').textContent;
+    if ($('account-card').dataset.loginState === 'yes') confirmWalletLogin(account);
     $('account-card').textContent = account.slice(0, 4) + '••••';
   }
 
@@ -206,6 +258,8 @@
   });
   $('speed').value = selected ? selected.value : '';
   $('updates').checked = !!preference.updates;
+  if (typeof preference.remember === 'boolean') $('remember').checked = preference.remember;
+  updateWalletCount();
   if (config.updateBlockingEnabled === false) $('updates').closest('details').hidden = true;
   $('updates').addEventListener('change', syncDomain);
   syncDomain();
@@ -214,30 +268,52 @@
 
   $('card').addEventListener('input', function () { this.value = normalize(this.value); });
 
-  $('saved').addEventListener('click', function () {
-    var box = dialog('كروتك المحفوظة');
-    var cards = array(read(memoryKey, [])).filter(function (card) { return typeof card === 'string'; });
-    if (!cards.length) box.appendChild(node('p', 'لا توجد كروت محفوظة. فعّل «حفظ الكرت على جهازي» عند الدخول.'));
-    cards.forEach(function (card) {
-      var button = node('button', card.slice(0, 4) + '•••• · استخدام الكرت', 'saved-card');
+  function showWallet() {
+    var box = dialog('محفظة كروتي');
+    var cards = walletCards();
+    box.appendChild(node('p', 'آخر خمسة كروت دخلت بها بنجاح على هذا المتصفح. اختر كرتاً لتعبئة رقمه.', 'sheet-note'));
+    if (!cards.length) box.appendChild(node('p', 'محفظتك فارغة. يُحفظ الكرت تلقائياً بعد نجاح الدخول عند تفعيل الحفظ.'));
+    cards.forEach(function (card, index) {
+      var row = node('div', undefined, 'wallet-row');
+      var button = node('button', undefined, 'saved-card');
       button.type = 'button';
+      var number = node('strong', card, 'wallet-number');
+      number.dir = 'ltr';
+      button.appendChild(number);
+      button.appendChild(node('small', index === 0 ? 'الأحدث · استخدام الكرت ←' : 'استخدام الكرت ←'));
       button.addEventListener('click', function () {
         $('card').value = card;
         $('remember').checked = true;
         closeDialog();
         $('card').focus();
       });
-      box.appendChild(button);
+      var remove = node('button', '×', 'wallet-remove');
+      remove.type = 'button';
+      remove.setAttribute('aria-label', 'حذف الكرت ' + card + ' من المحفظة');
+      remove.addEventListener('click', function () {
+        if (write(memoryKey, walletCards().filter(function (saved) { return saved !== card; }))) {
+          clearPending();
+          updateWalletCount();
+          showWallet();
+        } else notify('تعذّر الحذف. احذف بيانات الموقع من إعدادات المتصفح.');
+      });
+      row.appendChild(button);
+      row.appendChild(remove);
+      box.appendChild(row);
     });
-    var clear = node('button', 'حذف جميع الكروت', 'secondary');
+    var clear = node('button', 'إفراغ المحفظة', 'secondary');
     clear.type = 'button';
+    clear.disabled = cards.length === 0;
     clear.addEventListener('click', function () {
       var ok = write(memoryKey, []);
+      clearPending();
+      updateWalletCount();
       closeDialog();
-      notify(ok ? 'تم حذف الكروت المحفوظة' : 'تعذّر الحذف. احذف بيانات الموقع من إعدادات المتصفح.');
+      notify(ok ? 'تم إفراغ المحفظة' : 'تعذّر الحذف. احذف بيانات الموقع من إعدادات المتصفح.');
     });
     box.appendChild(clear);
-  });
+  }
+  $('saved').addEventListener('click', showWallet);
 
   function cardFromQR(raw) {
     var text = raw.trim();
@@ -321,6 +397,7 @@
   var error = $('login-error');
   var message = error.textContent.trim();
   if (message && !message.includes('$(')) {
+    clearPending();
     var translations = [
       [/invalid username|invalid password|not found/i, 'رقم الكرت غير صحيح. راجع الرقم وحاول مجدداً.'],
       [/simultaneous|no more sessions/i, 'هذا الكرت مستخدم على جهاز آخر.'],
@@ -360,20 +437,23 @@
       event.preventDefault(); notify('افتح صفحة الدخول من داخل شبكة الهوتسبوت.'); return;
     }
     syncDomain();
-    write(preferenceKey, { speed: $('speed').value, updates: $('updates').checked });
-    var cards = array(read(memoryKey, [])).filter(function (card) {
-      return typeof card === 'string' && card !== $('card').value;
-    });
-    if ($('remember').checked) cards.unshift($('card').value);
-    if (!write(memoryKey, cards.slice(0, 5)) && $('remember').checked) {
-      notify('المتصفح لا يسمح بحفظ الكرت، سيستمر تسجيل الدخول.');
-    }
     // Username-only accounts have an EMPTY password, never a copy of the card number.
     if (window.hotspotChap) {
       if (typeof window.hotspotMD5 !== 'function') {
         event.preventDefault(); notify('تعذّر تحميل ملف تسجيل الدخول. حدّث الصفحة وحاول مجدداً.'); return;
       }
       $('auth-password').value = window.hotspotMD5(window.hotspotChap.id + window.hotspotChap.challenge);
+    }
+    var preferencesSaved = write(preferenceKey, {
+      speed: $('speed').value, updates: $('updates').checked, remember: $('remember').checked
+    });
+    try {
+      sessionStorage.setItem(pendingKey, JSON.stringify({
+        card: $('card').value, remember: $('remember').checked, time: Date.now()
+      }));
+      if (!preferencesSaved && $('remember').checked) notify('المتصفح لا يسمح بحفظ الكرت، سيستمر تسجيل الدخول.');
+    } catch (error) {
+      if ($('remember').checked) notify('المتصفح لا يسمح بحفظ الكرت، سيستمر تسجيل الدخول.');
     }
     $('submit').disabled = true;
     $('submit').setAttribute('aria-busy', 'true');
