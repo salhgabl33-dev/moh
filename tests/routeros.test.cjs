@@ -11,7 +11,10 @@ const read = (name) => fs.readFileSync(path.join(root, 'routeros', name), 'utf8'
 const login = read('on-login.rsc');
 const logout = read('on-logout.rsc');
 const cleanup = read('cleanup-stale.rsc');
-const scripts = { login, logout, cleanup, verify: read('verify-readonly.rsc') };
+const defaultLogin = read('on-login-default.rsc');
+const multiLogin = read('on-login-UM10USER.rsc');
+const legacyLogout = read('on-logout-200-safe.rsc');
+const scripts = { login, logout, cleanup, defaultLogin, multiLogin, legacyLogout, verify: read('verify-readonly.rsc') };
 
 test('RouterOS sources have balanced strings and command/block delimiters', () => {
   for (const [name, code] of Object.entries(scripts)) {
@@ -42,7 +45,7 @@ test('the router rate whitelist exactly matches the five real portal configurati
   const rates = [...array[1].matchAll(/"([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(rates, Array.from(window.siteConfig.speedOptions, (speed) => speed.value));
   assert.equal(rates.includes('0/0'), false);
-  assert.match(login, /:local defaultRate "2M\/4M"/);
+  assert.match(login, /:local defaultRate "1024k\/3072k"/);
 });
 
 test('login requires event identity and checks the unique active client before applying a rate', () => {
@@ -62,16 +65,19 @@ test('logout deletion queries require queue ownership and the precise user/devic
 });
 
 test('script mutations stay inside owned queues and address lists rather than resetting router state', () => {
-  for (const code of [login, logout, cleanup]) {
+  for (const code of [login, logout, cleanup, legacyLogout]) {
     assert.doesNotMatch(code, /\/ip firewall (?:filter|nat|mangle)\b/);
     assert.doesNotMatch(code, /\/tool user-manager|\/user-manager|reset-counters|remove \[find\]/);
     for (const line of code.split('\n').filter((line) => /\/.*\bremove\b/.test(line))) {
-      assert.match(line.trim(), /^\/(?:queue simple|ip firewall address-list) remove \$(?:queueID|entryID);$/);
+      assert.match(line.trim(), /^\/(?:queue simple|ip firewall address-list|ip hotspot active) remove \$(?:queueID|entryID|sessionID);$/);
     }
   }
   assert.match(login, /:local blockList "\*yes\*\*"/);
   assert.match(login, /:local moveToTop false/);
   assert.match(login, /:if \(\$moveToTop = true\)/);
+  assert.match(login, /:local singleSessionPerUser false/);
+  assert.match(login, /:if \(\$singleSessionPerUser = true\)/);
+  assert.match(login, /find where user=\$clientUser and address!=\$clientIP/);
 });
 
 test('periodic cleanup identifies its namespace and checks for active clients before deletion', () => {
@@ -88,4 +94,18 @@ test('the verification commands are read-only and the guide identifies the user 
   const guide = read('README-AR.md');
   for (const word of ['CCR2116', 'RB1100x4', 'RouterOS 7', 'RouterOS 6', 'RADIUS', 'FastTrack', 'Mikrotik-Rate-Limit']) assert.ok(guide.includes(word), word);
   assert.ok(guide.includes('لم تُنفّذ على راوتر فعلي'));
+});
+
+test('the actual export integration preserves SPEED type, narrow legacy adoption and per-profile session policy', () => {
+  assert.match(login, /queue type find where name="SPEED"/);
+  assert.match(login, /:set queueKind "SPEED\/SPEED"/);
+  assert.match(login, /:local migrateLegacyUpdateEntries false/);
+  assert.match(login, /\$legacyComment != "Cards"/);
+  assert.match(login, /\$legacyComment != "10-USERS"/);
+  assert.match(login, /\$legacyKind != "SPEED\/SPEED"/);
+  assert.match(login, /queue simple set \$legacyID name=\$queueName comment=\$ownerMarker/);
+  assert.equal(defaultLogin.replace(/^# For[^\n]*\n/, '').replace(':local singleSessionPerUser true;', ':local singleSessionPerUser false;'), login);
+  assert.equal(multiLogin.replace(/^# For[^\n]*\n/, ''), login);
+  assert.match(legacyLogout, /name=\$legacyName and comment="SPEED"/);
+  assert.match(legacyLogout, /list="dis_update" and address=\$clientIP and comment=\$clientUser/);
 });
