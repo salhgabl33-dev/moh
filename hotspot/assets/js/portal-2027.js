@@ -64,6 +64,7 @@
     speeds.forEach(function (speed) {
       var button=node("button","speed-option",speed.name);
       button.type="button"; button.value=speed.value;
+      button.setAttribute("aria-label",speed.name + "، رفع " + speed.value.split("/")[0] + " وتنزيل " + speed.value.split("/")[1]);
       var download=speed.value.split("/")[1];
       button.appendChild(node("span","speed-value",download.replace(/M$/i," Mbps").replace(/K$/i," Kbps")));
       button.setAttribute("aria-pressed",String(speed.value === state.selectedSpeed));
@@ -90,6 +91,9 @@
   }
   function updateDomain() {
     if ($("login-domain")) $("login-domain").value=state.selectedSpeed + "|" + ($("data-saver") && $("data-saver").checked ? "*yes**" : "*no**");
+    var selected=speeds.find(function (speed) { return speed.value === state.selectedSpeed; });
+    text("selected-speed",selected ? "تم اختيار سرعة " + selected.name : "اختر السرعة المناسبة لك");
+    text("data-saver-state",$("data-saver") && $("data-saver").checked ? "مُفعّل" : "ملغي");
   }
   function savedCards() {
     try { var values=JSON.parse(store.get("hala2027.cards") || "[]"); return Array.isArray(values) ? values.filter(function (v) { return typeof v === "string" && v.length <= 128; }).slice(-5) : []; } catch (_) { return []; }
@@ -113,7 +117,7 @@
   function notice(message) { text("portal-notice",message); visible("portal-notice",!!message); }
   function error(message) { text("login-error",message); visible("login-error",!!message); if(message && $("login-error")) $("login-error").focus(); }
   function busy(value) {
-    state.busy=value; if ($("login-submit")) { $("login-submit").disabled=value; $("login-submit").setAttribute("aria-busy",String(value)); var label=$("login-submit").querySelector("span") || $("login-submit"); label.textContent=value ? "جارٍ الاتصال…" : "اتصل الآن"; }
+    state.busy=value; if ($("login-submit")) { $("login-submit").disabled=value; $("login-submit").setAttribute("aria-busy",String(value)); var label=$("login-submit").querySelector("span") || $("login-submit"); label.textContent=value ? "جارٍ الاتصال…" : "دخول الإنترنت"; }
     if ($("login-form")) $("login-form").setAttribute("aria-busy",String(value));
   }
   function friendlyError(value) {
@@ -269,7 +273,7 @@
     if(typeof username!=="string" || !username || username.length>128 || typeof password!=="string" || password.length>128) throw new Error("بيانات الكرت داخل الرمز غير صالحة.");
     $("username").value=normalizeCard(username);
     if($("password")) $("password").value=password;
-    if(password && $("password")){ visible("password-fields",true); if($("password-toggle")) $("password-toggle").setAttribute("aria-expanded","true"); }
+    if(password && $("password")){ visible("password-fields",true); revealSection("#password-fields"); if($("password-toggle")) $("password-toggle").setAttribute("aria-expanded","true"); }
     text("qr-message","تمت تعبئة بيانات الكرت. راجعها ثم اضغط اتصل الآن.");
     if($("qr-input")) $("qr-input").value="";
   }
@@ -318,6 +322,19 @@
   on("logout-button","click",function () { logout(false); }); on("logout-forget-button","click",function () { logout(true); });
   on("qr-apply","click",function () { try {fillQR($("qr-input").value);} catch(err){text("qr-message",err.message);} });
   on("scan-card","click",scanCard);
+  function revealSection(hash) {
+    if(!hash || hash.charAt(0) !== "#") return;
+    var target=$(decode(hash.slice(1)));
+    for(var current=target; current; current=current.parentElement) {
+      if(current.tagName === "DETAILS") current.open=true;
+    }
+  }
+  document.addEventListener("click",function (event) {
+    var link=event.target.closest ? event.target.closest('a[href^="#"]') : null;
+    if(link) revealSection(link.getAttribute("href"));
+  });
+  window.addEventListener("hashchange",function () { revealSection(location.hash); });
+  revealSection(location.hash);
   document.addEventListener("visibilitychange",function () { if(document.hidden){stopPolling();stopCamera();}else if(state.loggedIn) refreshStatus(); });
   window.addEventListener("pagehide",function () {stopPolling();stopCamera();});
   window.addEventListener("offline",function () { notice("فقد الجهاز اتصاله بالشبكة. تأكد من تشغيل الواي فاي."); });

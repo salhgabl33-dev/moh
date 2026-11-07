@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f5ee">
-  <meta name="description" content="بوابة هلا نت الجديدة — اختر سرعتك، أدخل كرتك وابقَ على اتصال.">
+  <meta name="theme-color" content="#eee7f5">
+  <meta name="description" content="هلا نت 2027 — بوابة اتصال زجاجية بألوان متجددة. اختر سرعتك وأدخل رقم الكرت.">
   <title>هلا نت · إصدار 2027</title>
   <link rel="icon" href="assets/img/mark-2027.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/css/portal-2027.css">
-  <script src="assets/js/network-config-2027.js" defer></script>
-  <script src="assets/js/md5-2027.js" defer></script>
-  <script src="assets/js/portal-2027.js" defer></script>
+  <link rel="stylesheet" href="assets/css/portal-2027.css?v=2027.2">
+  <script src="assets/js/network-config-2027.js?v=2027.2" defer></script>
+  <script src="assets/js/md5-2027.js?v=2027.2" defer></script>
+  <script src="assets/js/portal-2027.js?v=2027.2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#username">انتقل إلى تسجيل الدخول</a>
@@ -31,91 +31,49 @@
     <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 11.5a9 9 0 0 1-13 8L3 21l1.5-5A9 9 0 1 1 21 11.5Z"/><path d="M8 9h8M8 13h5"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.5 6a8 8 0 0 1 13 3M4.5 15a8 8 0 0 0 13 3"/></symbol>
   </defs></svg>
+  <div class="ambient-art" aria-hidden="true"><span class="wifi-bubble bubble-one"><svg><use href="#i-wifi"/></svg></span><span class="wifi-bubble bubble-two"><svg><use href="#i-wifi"/></svg></span><span class="pearl pearl-one"></span><span class="pearl pearl-two"></span><span class="pearl pearl-three"></span><span class="prism prism-one"></span><span class="prism prism-two"></span></div>
 
-  <div class="page-wrap">
+  <div class="page-wrap" id="top">
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="هلا نت، الصفحة الرئيسية">
-        <span class="brand-mark"><svg><use href="#i-wifi"/></svg></span>
-        <span class="brand-words"><strong data-site-name>هلا نت</strong><small>عالمك أقرب</small></span>
-      </a>
-      <nav class="main-nav" aria-label="القائمة الرئيسية">
-        <a href="#connect" class="nav-current">الدخول</a><a href="#packages">الباقات</a><a href="#services">الخدمات</a><a href="#help">المساعدة</a>
-      </nav>
-      <div class="header-tools"><span class="edition-label">إصدار <b dir="ltr">2027</b></span><button class="icon-button theme-toggle" id="theme-toggle" type="button" aria-label="تبديل المظهر" title="تبديل المظهر"><svg><use href="#i-moon"/></svg></button></div>
+      <div class="header-tools"><span class="connection-badge"><span class="status-dot"></span><span id="connection-label">بوابة الشبكة</span><b dir="ltr">2027</b></span><button class="icon-button theme-toggle" id="theme-toggle" type="button" aria-label="تبديل المظهر" title="تبديل المظهر"><svg><use href="#i-moon"/></svg></button></div>
+      <p class="network-eyebrow">شبكة لاسلكية متطورة</p>
+      <a class="brand-lockup" href="#top" aria-label="هلا نت، الصفحة الرئيسية"><div class="brand-name"><h1 data-site-name>هلا نت</h1><span class="brand-latin" dir="ltr">H A L A &nbsp; N E T</span><small>اتصال يفوق التوقعات</small></div><img class="gold-emblem" src="assets/img/hala-gold-emblem.svg" alt="" width="190" height="175"></a>
+      <p class="brand-tagline"><svg><use href="#i-bolt"/></svg><strong>للاتصالات اللاسلكية</strong></p>
+      <p class="brand-promise">اتصال سريع · خدمة مميزة · ثقة متجددة</p>
     </header>
 
-    <main id="top">
+    <main>
       <div id="portal-notice" class="portal-notice" role="status" aria-live="polite" hidden></div>
-      <section class="hero-layout" id="connect" aria-label="بوابة الاتصال">
-        <div class="hero-story">
-          <div class="hero-eyebrow"><span class="status-dot"></span><span id="connection-label">بوابة الشبكة</span><span class="eyebrow-divider"></span><span>تجربة متجددة</span></div>
-          <h1>كل عالمك.<br><span>باتصال واحد.</span></h1>
-          <p class="hero-description">أهلاً بك في <b data-site-name>هلا نت</b>.<br>لحظاتك، شغلك، وكل ما تحب… أقرب إليك.</p>
-          <div class="network-art" aria-hidden="true">
-            <div class="art-grid"></div><div class="orbit orbit-outer"></div><div class="orbit orbit-middle"></div><div class="orbit orbit-inner"></div>
-            <div class="orbit-axis axis-one"></div><div class="orbit-axis axis-two"></div>
-            <div class="orbit-center"><svg><use href="#i-wifi"/></svg></div>
-            <span class="orbit-satellite satellite-one"><svg><use href="#i-bolt"/></svg></span>
-            <span class="orbit-satellite satellite-two"><svg><use href="#i-play"/></svg></span>
-            <span class="satellite-dot dot-one"></span><span class="satellite-dot dot-two"></span>
-            <div class="art-caption"><span class="status-dot"></span><span>مساحتك الرقمية تبدأ من هنا</span></div>
-            <span class="art-coordinate coordinate-one" dir="ltr">HALA / 2027</span><span class="art-coordinate coordinate-two" dir="ltr">A NEW CONNECTION</span>
-          </div>
-          <div class="hero-benefits"><span><svg><use href="#i-bolt"/></svg>سرعتك باختيارك</span><span><svg><use href="#i-shield"/></svg>تحكّم في استهلاكك</span></div>
-        </div>
+      <figure class="payment-guide" id="payment-guide" hidden><img src="assets/img/shilling-cards.png" alt="كروت شبكة هلا نت متوفرة عبر محفظة شلن. اختر سداد ثم كروت الشبكات وأدخل كود الشبكة." width="1915" height="821" fetchpriority="high" decoding="async"><figcaption>كروت الشبكة عبر محفظة شلن <span>كود الشبكة <b id="payment-network-code" dir="ltr">20810</b></span></figcaption></figure>
+      <a class="network-info" href="#help" data-open-panel="help">معلومات الشبكة والتعليمات العامة <svg><use href="#i-shield"/></svg></a>
 
-        <div class="connection-card" id="login-panel">
-          <div class="card-heading"><div><span class="section-kicker">خطوتك الأولى</span><h2>خلّنا نوصلك.</h2><p>أدخل بيانات كرتك وابدأ اتصالك.</p></div><span class="heading-icon"><svg><use href="#i-arrow"/></svg></span></div>
+      <section id="connect" class="connect-section" aria-label="بوابة الاتصال">
+        <div id="login-panel">
           <form id="login-form" name="login" method="post" action="$(link-login-only)">
             <input type="hidden" name="dst" value="$(link-orig)"><input type="hidden" name="popup" value="true"><input type="hidden" name="domain" id="login-domain">
-            <fieldset class="speed-fieldset"><legend><span class="step-number">01</span>اختر سرعتك<span class="field-hint">على راحتك</span></legend><div class="speed-options" id="speed-options"></div></fieldset>
-            <div class="card-input-section"><label class="field-label" for="username"><span class="step-number">02</span>رقم الكرت</label><div class="input-wrap"><svg><use href="#i-card"/></svg><input id="username" name="username" type="text" autocomplete="username" inputmode="text" autocapitalize="off" spellcheck="false" placeholder="أدخل رقم الكرت هنا" required aria-describedby="card-tip" maxlength="128"></div><p class="input-hint" id="card-tip">تجد رقم الكرت على بطاقة الاشتراك.</p></div>
-            <div class="password-control"><button id="password-toggle" class="text-button" type="button" aria-expanded="false" aria-controls="password-fields">لديّ كلمة مرور <span aria-hidden="true">+</span></button></div>
-            <div id="password-fields" class="password-fields" hidden><label for="password" class="field-label">كلمة المرور</label><div class="input-wrap password-wrap"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور" maxlength="128"><button id="show-password" class="icon-button" type="button" aria-label="إظهار كلمة المرور"><svg><use href="#i-eye"/></svg></button></div></div>
-            <details class="qr-tools"><summary>لديك كرت برمز QR؟<span aria-hidden="true">+</span></summary><div class="qr-content"><button id="scan-card" type="button" class="secondary-button">مسح الكرت بالكاميرا</button><video id="qr-video" hidden playsinline muted></video><label for="qr-input">أو الصق محتوى رمز الكرت</label><input id="qr-input" type="text" autocomplete="off" placeholder="ألصق بيانات كرتك هنا"><button id="qr-apply" type="button" class="secondary-button">تعبئة بيانات الكرت</button><p id="qr-message" role="status" aria-live="polite"></p></div></details>
-            <div class="saved-card-row"><label class="checkbox-label"><input id="save-card" type="checkbox"><span>تذكّر رقم الكرت</span></label><span class="privacy-hint">على هذا الجهاز فقط</span></div>
-            <div class="saved-cards-row" id="saved-cards-row" hidden><label class="sr-only" for="saved-cards">الكروت المحفوظة</label><select id="saved-cards"><option value="">الكروت المحفوظة</option></select><button class="text-button" id="forget-cards" type="button">مسح</button></div>
-            <label class="saver-control" for="data-saver"><span class="saver-icon"><svg><use href="#i-shield"/></svg></span><span class="saver-copy"><strong>وفّر رصيدك</strong><small>حظر التحديثات التلقائية عبر الشبكة</small></span><input type="checkbox" id="data-saver"><span class="switch-track" aria-hidden="true"></span></label>
+            <fieldset class="speed-card glass-card"><legend class="sr-only">اختر سرعة الإنترنت</legend><div class="speed-heading"><span class="verified-mark"><svg><use href="#i-shield"/></svg></span><div><h2>اختار سرعة الإنترنت</h2><p>اختر السرعة المناسبة لك</p></div></div><div class="speed-options" id="speed-options"></div><p class="speed-notice">عزيزي العميل، زيادة سرعة الإنترنت قد تزيد استهلاك رصيدك.</p><p class="selected-speed"><span class="status-dot"></span><span id="selected-speed" role="status" aria-live="polite">اختر السرعة المناسبة لك</span></p></fieldset>
+            <div class="card-input-section"><label class="sr-only" for="username">رقم الكرت</label><div class="input-wrap"><span class="input-icon"><svg><use href="#i-card"/></svg></span><input id="username" name="username" type="text" autocomplete="username" inputmode="text" autocapitalize="off" spellcheck="false" placeholder="أدخل رقم الكرت هنا" required aria-describedby="card-tip" maxlength="128"></div><p class="sr-only" id="card-tip">تجد رقم الكرت على بطاقة الاشتراك.</p></div>
             <div id="login-error" class="form-error" role="alert" tabindex="-1" hidden></div>
-            <button class="primary-button" id="login-submit" type="submit"><span>اتصل الآن</span><svg><use href="#i-arrow"/></svg></button>
-            <p class="login-footnote">باستخدامك الشبكة، توافق على <a href="#network-rules">إرشادات الاستخدام</a>.</p>
+            <button class="primary-button" id="login-submit" type="submit"><span>دخول الإنترنت</span><svg><use href="#i-arrow"/></svg></button>
+            <label class="saver-control glass-card" for="data-saver"><span class="saver-icon"><svg><use href="#i-shield"/></svg></span><span class="saver-copy"><strong>إيقاف تحديثات جوجل</strong><small>منع التحديثات التلقائية عبر الشبكة</small></span><span class="saver-toggle"><input type="checkbox" id="data-saver"><span class="switch-track" aria-hidden="true"></span><span class="switch-label" id="data-saver-state" aria-hidden="true">ملغي</span></span></label>
+            <details class="login-options"><summary>كلمة مرور أو كرت محفوظ <span aria-hidden="true">＋</span></summary><div class="options-content"><div class="password-control"><button id="password-toggle" class="text-button" type="button" aria-expanded="false" aria-controls="password-fields">لديّ كلمة مرور <span aria-hidden="true">+</span></button></div><div id="password-fields" class="password-fields" hidden><label for="password" class="field-label">كلمة المرور</label><div class="input-wrap password-wrap"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور" maxlength="128"><button id="show-password" class="icon-button" type="button" aria-label="إظهار كلمة المرور"><svg><use href="#i-eye"/></svg></button></div></div><div class="saved-card-row"><label class="checkbox-label"><input id="save-card" type="checkbox"><span>تذكّر رقم الكرت على هذا الجهاز</span></label><small>بدون حفظ كلمة المرور</small></div><div class="saved-cards-row" id="saved-cards-row" hidden><label class="sr-only" for="saved-cards">الكروت المحفوظة</label><select id="saved-cards"><option value="">الكروت المحفوظة</option></select><button class="text-button" id="forget-cards" type="button">مسح</button></div></div></details>
           </form>
           <noscript><p class="form-error">فعّل JavaScript في المتصفح لاستخدام بوابة الشبكة.</p></noscript>
         </div>
 
-        <section class="connection-card status-card" id="status-panel" aria-labelledby="status-heading" hidden>
-          <div class="card-heading"><div><span class="section-kicker">أهلاً بعودتك</span><h2 id="status-heading">عالمك متصل.</h2><p>تابع اتصالك ورصيدك من مكان واحد.</p></div><span class="heading-icon"><svg><use href="#i-wifi"/></svg></span></div>
-          <div class="active-session"><span class="status-dot"></span><strong>جلسة الاتصال</strong><span id="status-username" dir="ltr">—</span></div>
-          <div class="remaining-balance"><svg><use href="#i-download"/></svg><span>البيانات المتبقية</span><strong id="status-remaining-data">—</strong></div>
-          <dl class="stats-grid"><div><dt>وقت الاتصال</dt><dd id="status-uptime">—</dd></div><div><dt>الوقت المتبقي</dt><dd id="status-remaining-time">—</dd></div><div><dt>التحميل</dt><dd id="status-download">—</dd></div><div><dt>الرفع</dt><dd id="status-upload">—</dd></div><div><dt>السرعة المختارة</dt><dd id="status-speed">—</dd></div><div><dt>عنوان الجهاز</dt><dd id="status-ip" dir="ltr">—</dd></div></dl>
-          <p id="status-message" class="status-message" role="status" aria-live="polite"></p>
-          <button id="refresh-status" class="secondary-button" type="button"><svg><use href="#i-refresh"/></svg>تحديث بيانات الاتصال</button>
-          <button id="logout-button" class="primary-button" type="button"><span>تسجيل الخروج</span><svg><use href="#i-arrow"/></svg></button>
-          <button id="logout-forget-button" class="text-button forget-session" type="button">خروج ونسيان الكرت من الجهاز</button>
-        </section>
+        <section class="status-card glass-card" id="status-panel" aria-labelledby="status-heading" hidden><div class="card-heading"><span class="status-icon"><svg><use href="#i-wifi"/></svg></span><div><h2 id="status-heading">أهلاً بك، عالمك متصل.</h2><p>كل تفاصيل اتصالك في مكان واحد.</p></div></div><div class="active-session"><span class="status-dot"></span><strong>جلسة الاتصال</strong><span id="status-username" dir="ltr">—</span></div><div class="remaining-balance"><span>البيانات المتبقية</span><strong id="status-remaining-data">—</strong></div><dl class="stats-grid"><div><dt>متصل منذ</dt><dd id="status-uptime">—</dd></div><div><dt>الوقت المتبقي</dt><dd id="status-remaining-time">—</dd></div><div><dt>استهلاك التحميل</dt><dd id="status-download">—</dd></div><div><dt>استهلاك الرفع</dt><dd id="status-upload">—</dd></div><div><dt>سرعة الكرت</dt><dd id="status-speed">—</dd></div><div><dt>عنوان الجهاز</dt><dd id="status-ip" dir="ltr">—</dd></div></dl><p id="status-message" class="status-message" role="status" aria-live="polite"></p><button id="refresh-status" class="secondary-button" type="button"><svg><use href="#i-refresh"/></svg>تحديث بيانات الاتصال</button><button id="logout-button" class="primary-button" type="button"><span>تسجيل الخروج</span><svg><use href="#i-arrow"/></svg></button><button id="logout-forget-button" class="text-button forget-session" type="button">خروج ونسيان الكرت من الجهاز</button></section>
       </section>
 
-      <div class="connection-strip"><span class="strip-label"><svg><use href="#i-wifi"/></svg><strong>تجربة أبسط. اتصال أقرب.</strong></span><p>رقم كرتك، سرعتك، ورصيدك. كل شيء في مكانه.</p><a href="#packages">اكتشف الباقات <span aria-hidden="true">↙</span></a></div>
+      <nav class="quick-links" aria-label="خدمات الشبكة"><a href="#packages" data-open-panel="packages"><span class="quick-icon quick-prices" aria-hidden="true">$</span><strong>أسعار الكروت</strong></a><a href="#qr-section" data-open-panel="qr-section"><span class="quick-icon quick-qr"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h3v3h-3zM21 14v7h-7M12 3v3M3 12h3M9 12h6M12 9v6M12 21v-3"/></svg></span><strong dir="ltr">QR CODE</strong></a><a href="#sales-section" data-open-panel="sales-section"><span class="quick-icon quick-sales"><svg><use href="#i-location"/></svg></span><strong>أماكن البيع</strong></a></nav>
+      <p class="customer-service">خدمة العملاء <a href="#help" data-support-phone hidden><span dir="ltr">780103489</span></a> · <span data-site-name>هلا نت</span></p>
 
-      <section class="packages-section" id="packages" aria-labelledby="packages-heading">
-        <div class="section-heading"><div><span class="section-kicker">مساحة لكل احتياج</span><h2 id="packages-heading">باقة على مقاس يومك.</h2></div><p>اختر ما يناسبك، واستمتع بتفاصيلك.</p></div>
-        <div class="packages-grid" id="packages-grid"></div>
-        <div class="offer-strip"><svg><use href="#i-bolt"/></svg><p id="offers-text">انتظروا عروض شبكة هلا نت</p><span class="offer-tag">عروض الشبكة</span></div>
-        <details class="payment-guide" id="payment-guide" hidden><summary><span>كرتك متوفر عبر محفظة شلن</span><span class="payment-code">كود الشبكة <b id="payment-network-code" dir="ltr">20810</b></span><span aria-hidden="true">+</span></summary><div class="payment-content"><p>من تطبيق محفظة شلن: اختر «سداد»، ثم «كروت الشبكات»، وأدخل كود الشبكة الموضح أعلاه، ثم اختر فئة الكرت.</p><img src="assets/img/shilling-cards.png" alt="إعلان هلا نت الأصلي: خطوات شراء الكروت من محفظة شلن" width="1915" height="821" loading="lazy" decoding="async"></div></details>
-      </section>
-
-      <section class="services-section" id="services" aria-labelledby="services-heading">
-        <div class="section-heading"><div><span class="section-kicker">أكثر من اتصال</span><h2 id="services-heading">خذ لك لحظة.</h2></div><p>خدماتك المفضلة، أقرب إليك.</p></div>
-        <div class="services-grid"><a href="#services" class="service-card stream-card" id="stream-link"><span class="service-icon"><svg><use href="#i-play"/></svg></span><div><span class="service-kicker">وقت المشاهدة</span><h3>البث المباشر</h3><p>انتقل إلى خدمة البث الخاصة بالشبكة.</p></div><span class="service-arrow" aria-hidden="true">↖</span></a><a href="#services" class="service-card lounge-card" id="lounge-link"><span class="service-icon"><svg><use href="#i-cup"/></svg></span><div><span class="service-kicker">مساحة للترفيه</span><h3>الاستراحة</h3><p>تصفّح المحتوى المتاح من مزوّد الخدمة.</p></div><span class="service-arrow" aria-hidden="true">↖</span></a></div>
-        <p class="service-note">توفر خدمات البث والمحتوى يخضع لإعدادات الشبكة ومزوّد الخدمة.</p>
-      </section>
-
-      <section class="help-section" id="help" aria-labelledby="help-heading">
-        <div class="help-intro"><span class="section-kicker">نحن بالقرب منك</span><h2 id="help-heading">كل شيء واضح.</h2><p>إجابات سريعة، لتبقى على اتصال.</p><p class="network-description" data-site-description>هلا نت هي شبكة إنترنت متطورة، تسعى لتقديم تجربة اتصال مميزة بأسعار مناسبة.</p><div class="contact-links"><a href="#help" data-support-phone hidden><svg><use href="#i-phone"/></svg><span>اتصل بالدعم</span></a><a href="#help" data-support-whatsapp hidden><svg><use href="#i-message"/></svg><span>تواصل عبر واتساب</span></a></div><p class="network-location" data-location hidden></p><div class="sales-box"><span class="sales-icon"><svg><use href="#i-location"/></svg></span><div><h3>من أين أحصل على كرت؟</h3><ul id="sales-points"></ul></div></div></div>
-        <div class="faq-list"><details><summary>كيف أسجّل الدخول؟<span aria-hidden="true">+</span></summary><p>اختر السرعة المناسبة، ثم أدخل رقم كرتك واضغط «اتصل الآن». إذا كان لكرتك كلمة مرور، افتح خيار «لديّ كلمة مرور» وأدخلها.</p></details><details><summary>ما فائدة خيار «وفّر رصيدك»؟<span aria-hidden="true">+</span></summary><p>يرسل طلب حظر التحديثات التلقائية إلى الراوتر للمساعدة في تقليل استهلاك الرصيد. يعتمد تنفيذه على قواعد الحظر المضبوطة في الشبكة.</p></details><details><summary>أين أتابع الوقت والرصيد؟<span aria-hidden="true">+</span></summary><p>بعد تسجيل الدخول تظهر لوحة اتصالك، وفيها الاستهلاك والوقت والرصيد المتبقي حسب البيانات التي يرسلها الراوتر. اضغط «تحديث بيانات الاتصال» لتحديثها.</p></details><details><summary>كيف أغيّر سرعة الاتصال؟<span aria-hidden="true">+</span></summary><p>سجّل الخروج من لوحة الاتصال، ثم اختر السرعة الجديدة وأعد الدخول بكرتك. أدخل كلمة المرور مجدداً إذا كان الكرت يتطلبها.</p></details><details id="network-rules"><summary>إرشادات استخدام الشبكة<span aria-hidden="true">+</span></summary><ul id="network-notes"></ul></details></div>
-      </section>
+      <details class="content-panel glass-card" id="packages"><summary><span id="packages-heading">أسعار الكروت والباقات</span><span aria-hidden="true">＋</span></summary><div class="panel-content"><div class="packages-grid" id="packages-grid"></div><p class="offer-strip" id="offers-text"></p></div></details>
+      <details class="content-panel glass-card qr-tools" id="qr-section"><summary>مسح كرت QR <span aria-hidden="true">＋</span></summary><div class="panel-content qr-content"><p>امسح الرمز أو الصق محتواه لتعبئة الكرت، ثم راجع البيانات واضغط دخول الإنترنت.</p><button id="scan-card" type="button" class="secondary-button">مسح الكرت بالكاميرا</button><video id="qr-video" hidden playsinline muted></video><label for="qr-input">أو الصق محتوى رمز الكرت</label><input id="qr-input" type="text" autocomplete="off" placeholder="ألصق بيانات كرتك هنا"><button id="qr-apply" type="button" class="secondary-button">تعبئة بيانات الكرت</button><p id="qr-message" role="status" aria-live="polite"></p></div></details>
+      <details class="content-panel glass-card" id="sales-section"><summary>أماكن بيع الكروت <span aria-hidden="true">＋</span></summary><div class="panel-content sales-content"><svg><use href="#i-location"/></svg><ul id="sales-points"></ul><p class="network-location" data-location hidden></p></div></details>
+      <details class="content-panel glass-card" id="services"><summary><span id="services-heading">البث المباشر والاستراحة</span><span aria-hidden="true">＋</span></summary><div class="panel-content"><div class="services-grid"><a href="#services" class="service-card" id="stream-link"><span class="service-icon"><svg><use href="#i-play"/></svg></span><strong>البث المباشر</strong><small>بث الشبكة</small></a><a href="#services" class="service-card" id="lounge-link"><span class="service-icon lounge-icon"><svg><use href="#i-cup"/></svg></span><strong>الاستراحة</strong><small>مساحة للترفيه</small></a></div><p class="service-note">يعتمد توفر الخدمات على إعدادات الشبكة ومزوّد الخدمة.</p></div></details>
+      <details class="content-panel glass-card" id="help"><summary><span id="help-heading">معلومات الشبكة والتعليمات العامة</span><span aria-hidden="true">＋</span></summary><div class="panel-content"><p class="network-description" data-site-description></p><div class="contact-links"><a href="#help" data-support-whatsapp hidden><svg><use href="#i-message"/></svg>تواصل عبر واتساب</a></div><div class="faq-list"><details><summary>كيف أسجّل الدخول؟</summary><p>اختر السرعة، وأدخل رقم كرتك، ثم اضغط دخول الإنترنت. إذا كان الكرت بكلمة مرور، افتح «كلمة مرور أو كرت محفوظ» وأدخلها قبل الاتصال.</p></details><details><summary>كيف أغيّر سرعة الكرت؟</summary><p>سجّل الخروج، واختر السرعة الجديدة، ثم أعد الدخول ببيانات كرتك.</p></details><details><summary>هل يمنع الخيار كل تحديثات الجهاز؟</summary><p>يرسل الخيار طلب منع التحديثات إلى الراوتر. يعتمد التنفيذ على قواعد الشبكة؛ ويمكنك إيقاف التحديثات من إعدادات جهازك أيضاً.</p></details><details id="network-rules"><summary>إرشادات استخدام الشبكة</summary><ul id="network-notes"></ul></details></div><p class="login-footnote">باستخدامك الشبكة، توافق على إرشادات الاستخدام.</p></div></details>
     </main>
-    <footer class="site-footer"><a class="brand footer-brand" href="#top"><span class="brand-mark"><svg><use href="#i-wifi"/></svg></span><strong data-site-name>هلا نت</strong></a><p>نصلك بعالمك، كل يوم.</p><span class="footer-edition" dir="ltr">HALA NET <i>·</i> 2027</span></footer>
+    <footer class="site-footer"><p>أخي الكريم: استخدم الإنترنت فيما يرضي الله عز وجل.</p><span dir="ltr">HALA NET · 2027</span></footer>
   </div>
 </body>
 </html>

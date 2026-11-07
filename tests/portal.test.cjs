@@ -122,12 +122,36 @@ test('a RouterOS logged-in="no" response keeps the login form visible', async ()
   assert.equal(app.$('connection-label').textContent, 'بوابة الشبكة');
 });
 
+test('speed selection and the update-blocking switch announce their current choices', async () => {
+  const app = harness();
+  await app.settle();
+  assert.equal(app.$('selected-speed').textContent, 'تم اختيار سرعة متوسطة');
+  app.$('speed-options').querySelectorAll('button')[4].dispatchEvent(new app.window.Event('click'));
+  assert.equal(app.$('selected-speed').textContent, 'تم اختيار سرعة عالية جداً VIP');
+  assert.equal(app.$('login-domain').value, '8M/16M|*no**');
+  app.$('data-saver').checked = true;
+  app.change('data-saver');
+  assert.equal(app.$('login-domain').value, '8M/16M|*yes**');
+});
+
+test('quick links open their initially collapsed destination panels', async () => {
+  const app = harness();
+  await app.settle();
+  for (const id of ['packages', 'qr-section', 'sales-section', 'help']) {
+    assert.equal(Boolean(app.$(id).open), false);
+    const anchor = app.document.querySelector('a[data-open-panel="' + id + '"]');
+    assert.ok(anchor, 'Missing quick link for ' + id);
+    anchor.dispatchEvent(new app.window.Event('click', { bubbles: true, cancelable: true }));
+    assert.equal(app.$(id).open, true);
+  }
+});
+
 test('PAP uses POST body encoding and retains the original speed|block-updates protocol', async () => {
   const app = harness({ respond: successRoute });
   await app.settle();
   assert.equal(app.$('login-domain').value, '2M/4M|*no**');
   const buttons = app.$('speed-options').querySelectorAll('button');
-  buttons[3].dispatchEvent(new app.window.Event('click'));
+  buttons[4].dispatchEvent(new app.window.Event('click'));
   app.$('data-saver').checked = true;
   app.change('data-saver');
   await app.submit('٧٥a+&=%', 'p+&= %?/');
@@ -141,6 +165,18 @@ test('PAP uses POST body encoding and retains the original speed|block-updates p
   assert.equal(request.url.searchParams.has('password'), false);
   assert.equal(app.$('status-panel').hidden, false);
   assert.equal(app.$('password').value, '');
+});
+
+test('five speed choices retain ascending order with VIP fifth after high and medium selected by default', async () => {
+  const app = harness();
+  await app.settle();
+  const buttons = Array.from(app.$('speed-options').querySelectorAll('button'));
+  assert.equal(buttons.length, 5);
+  assert.deepEqual(buttons.map((button) => button.value), ['1M/2M', '2M/4M', '3M/6M', '4M/8M', '8M/16M']);
+  assert.deepEqual(buttons.map((button) => button.firstChild.textContent), ['اقتصادية', 'متوسطة', 'عادية', 'عالية', 'عالية جداً VIP']);
+  assert.equal(buttons[1].getAttribute('aria-pressed'), 'true');
+  assert.equal(buttons.filter((button) => button.getAttribute('aria-pressed') === 'true').length, 1);
+  assert.equal(app.$('login-domain').value, '2M/4M|*no**');
 });
 
 test('RouterOS login failure shows the Arabic error, clears secrets, and permits another attempt', async () => {
@@ -255,6 +291,7 @@ test('pasting a username-only QR clears any password left by a previous card wit
   assert.equal(app.$('username').value, 'qr-user');
   assert.equal(app.$('password').value, 'a+b&c');
   assert.equal(app.$('password-fields').hidden, false);
+  assert.equal(app.$('password-fields').closest('details').open, true);
   assert.equal(app.requests.length, 1);
 });
 
