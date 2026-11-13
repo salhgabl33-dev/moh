@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="cache-control" content="no-store">
+  <meta http-equiv="pragma" content="no-cache">
+  $(if var == "")
+  <meta http-equiv="refresh" content="0; url=index.html?portal=login&amp;error=$(error-esc)">
+  $(endif)
+  <title>بوابة الشبكة · تسجيل الدخول</title>
+</head>
+<body>
+  $(if error == "")
+  <div id="router-response" data-action="onLoginStart"
+  $(else)
+  <div id="router-response" data-action="onLoginError"
+  $(endif)
+    data-logged-in="$(logged-in)"
+    data-login-url="$(link-login-only-esc)"
+    data-status-url="$(link-status-esc)"
+    data-logout-url="$(link-logout-esc)"
+    data-dst="$(link-orig-esc)"
+    data-username="$(username-esc)"
+    data-ip="$(ip-esc)"
+    data-domain="$(domain-esc)"
+    data-error="$(error-esc)">
+  </div>
+  $(if chap-id)
+  <script type="text/plain" id="router-chap-id">$(chap-id)</script>
+  <script type="text/plain" id="router-chap-challenge">$(chap-challenge)</script>
+  $(endif)
+  <p><a href="index.html">فتح صفحة الشبكة</a></p>
+  <noscript><p>يرجى تفعيل JavaScript لاستخدام بوابة الشبكة.</p></noscript>
+</body>
+</html>
