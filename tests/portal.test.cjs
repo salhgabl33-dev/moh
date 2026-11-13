@@ -128,10 +128,10 @@ test('speed selection and the update-blocking switch announce their current choi
   assert.equal(app.$('selected-speed').textContent, 'تم اختيار سرعة متوسطة');
   app.$('speed-options').querySelectorAll('button')[4].dispatchEvent(new app.window.Event('click'));
   assert.equal(app.$('selected-speed').textContent, 'تم اختيار سرعة عالية جداً VIP');
-  assert.equal(app.$('login-domain').value, '8M/16M|*no**');
+  assert.equal(app.$('login-domain').value, '10M/20M|*no**');
   app.$('data-saver').checked = true;
   app.change('data-saver');
-  assert.equal(app.$('login-domain').value, '8M/16M|*yes**');
+  assert.equal(app.$('login-domain').value, '10M/20M|*yes**');
 });
 
 test('quick links open their initially collapsed destination panels', async () => {
@@ -159,7 +159,7 @@ test('PAP uses POST body encoding and retains the original speed|block-updates p
   assert.ok(request);
   assert.equal(request.fields.get('username'), '75a+&=%');
   assert.equal(request.fields.get('password'), 'p+&= %?/');
-  assert.equal(request.fields.get('domain'), '8M/16M|*yes**');
+  assert.equal(request.fields.get('domain'), '10M/20M|*yes**');
   assert.equal(request.fields.get('popup'), 'true');
   assert.equal(request.url.searchParams.has('username'), false);
   assert.equal(request.url.searchParams.has('password'), false);
@@ -172,7 +172,7 @@ test('five speed choices retain ascending order with VIP fifth after high and me
   await app.settle();
   const buttons = Array.from(app.$('speed-options').querySelectorAll('button'));
   assert.equal(buttons.length, 5);
-  assert.deepEqual(buttons.map((button) => button.value), ['1M/2M', '2M/4M', '3M/6M', '4M/8M', '8M/16M']);
+  assert.deepEqual(buttons.map((button) => button.value), ['1M/3M', '2M/4M', '2M/6M', '5M/10M', '10M/20M']);
   assert.deepEqual(buttons.map((button) => button.firstChild.textContent), ['اقتصادية', 'متوسطة', 'عادية', 'عالية', 'عالية جداً VIP']);
   assert.equal(buttons[1].getAttribute('aria-pressed'), 'true');
   assert.equal(buttons.filter((button) => button.getAttribute('aria-pressed') === 'true').length, 1);
@@ -263,6 +263,23 @@ test('successful login without opt-in does not save a card or password', async (
   assert.equal(app.values.has('hala2027.cards'), false);
 });
 
+test('saved card numbers never trigger frontend authentication or supply a stored password', async () => {
+  const app = harness({ storage: { 'hala2027.cards': '["saved-card"]' } });
+  await app.settle();
+  assert.equal(app.requests.length, 1);
+  assert.equal(app.requests[0].method, 'GET');
+  assert.equal(app.$('login-panel').hidden, false);
+  assert.equal(app.$('username').value, '');
+  assert.equal(app.$('password').value, '');
+  app.$('saved-cards').querySelector('option[value="saved-card"]').selected = true;
+  app.change('saved-cards');
+  await app.settle();
+  assert.equal(app.$('username').value, 'saved-card');
+  assert.equal(app.$('password').value, '');
+  assert.equal(app.requests.length, 1);
+  assert.deepEqual(JSON.parse(app.values.get('hala2027.cards')), ['saved-card']);
+});
+
 test('CHAP decodes octal and hexadecimal bytes before hashing with the actual MD5 implementation', async () => {
   const chap = { id: String.raw`\001`, challenge: String.raw`\000\177\200\377\x0a` };
   const password = 'pass+&=42';
@@ -342,6 +359,36 @@ test('a stale status response cannot reopen a session after a successful logout'
   assert.match(app.$('portal-notice').textContent, /قطع الاتصال/);
   const logoutRequest = app.requests.find((item) => item.url.pathname === '/logout');
   assert.equal(logoutRequest.method, 'POST');
+  assert.equal(logoutRequest.url.searchParams.get('erase-cookie'), 'on');
+});
+
+test('ordinary logout revokes native auto-login while retaining locally saved card numbers', async () => {
+  const app = harness({ storage: { 'hala2027.cards': '["card-2027"]' }, respond: (request) => request.url.pathname === '/logout'
+    ? reply({ action: 'onLoggedOut', loggedIn: 'no' }) : successRoute(request) });
+  await app.settle();
+  await app.submit();
+  await app.click('logout-button');
+  const logoutRequest = app.requests.find((item) => item.url.pathname === '/logout');
+  assert.equal(logoutRequest.method, 'POST');
+  assert.equal(logoutRequest.url.searchParams.get('erase-cookie'), 'on');
+  assert.deepEqual(JSON.parse(app.values.get('hala2027.cards')), ['card-2027']);
+  assert.equal(app.$('saved-cards-row').hidden, false);
+  assert.equal(app.$('login-panel').hidden, false);
+  assert.match(app.$('portal-notice').textContent, /قطع الاتصال/);
+  assert.equal(app.requests.filter((request) => request.url.pathname === '/login' && request.method === 'GET').length, 1);
+});
+
+test('a logout response without confirmed disconnection keeps the session and saved cards visible', async () => {
+  const app = harness({ storage: { 'hala2027.cards': '["card-2027"]' }, respond: (request) => request.url.pathname === '/logout'
+    ? reply({ action: 'onLoggedOut', loggedIn: '' }) : successRoute(request) });
+  await app.settle();
+  await app.submit();
+  await app.click('logout-forget-button');
+  assert.deepEqual(JSON.parse(app.values.get('hala2027.cards')), ['card-2027']);
+  assert.equal(app.$('status-panel').hidden, false);
+  assert.equal(app.$('login-panel').hidden, true);
+  assert.match(app.$('status-message').textContent, /لم يؤكد الراوتر قطع الاتصال/);
+  assert.doesNotMatch(app.$('portal-notice').textContent, /قطع الاتصال بنجاح/);
 });
 
 test('logout-and-forget erases saved cards only after the router confirms disconnection', async () => {
@@ -353,12 +400,15 @@ test('logout-and-forget erases saved cards only after the router confirms discon
   await app.click('logout-forget-button');
   assert.equal(app.values.has('hala2027.cards'), true);
   assert.equal(app.$('status-panel').hidden, false);
+  assert.equal(app.$('login-panel').hidden, true);
+  assert.match(app.$('status-message').textContent, /لم يؤكد الراوتر قطع الاتصال/);
+  assert.doesNotMatch(app.$('portal-notice').textContent, /قطع الاتصال بنجاح/);
   allowLogout = true;
   await app.click('logout-forget-button');
   assert.equal(app.values.has('hala2027.cards'), false);
   assert.equal(app.$('login-panel').hidden, false);
   const requests = app.requests.filter((item) => item.url.pathname === '/logout');
-  assert.ok(requests.every((request) => request.url.searchParams.get('erase-cookie') === 'yes'));
+  assert.ok(requests.every((request) => request.url.searchParams.get('erase-cookie') === 'on'));
 });
 
 test('a camera stream arriving after pagehide is stopped without opening video or scanning', async () => {

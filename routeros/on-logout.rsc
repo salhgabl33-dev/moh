@@ -1,3 +1,4 @@
+# HN27_ROAMING_VERSION=2027.3
 # Paste into HotSpot User Profile > Scripts > On Logout.
 # Only removes exact resources owned by this user/device event.
 :do {

@@ -1,6 +1,6 @@
 {
   "name": "hala-net-hotspot-2027",
-  "version": "2027.2.0",
+  "version": "2027.3.0",
   "private": true,
   "description": "Offline Arabic MikroTik hotspot portal — 2027 edition",
   "scripts": { "test": "node --test tests/*.test.cjs" },

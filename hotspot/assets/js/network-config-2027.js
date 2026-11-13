@@ -5,11 +5,11 @@ window.siteConfig = {
   welcomeMessageV: false,
   textSlider1: "إنترنت يقرّبك من كل ما تحب. اختر الباقة والسرعة المناسبة لك، وتابع اتصالك من مكان واحد.",
   speedOptions: [
-    { value: "1M/2M", name: "اقتصادية", default: false, visible: true },
+    { value: "1M/3M", name: "اقتصادية", default: false, visible: true },
     { value: "2M/4M", name: "متوسطة", default: true, visible: true },
-    { value: "3M/6M", name: "عادية", default: false, visible: true },
-    { value: "4M/8M", name: "عالية", default: false, visible: true },
-    { value: "8M/16M", name: "عالية جداً VIP", default: false, visible: true }
+    { value: "2M/6M", name: "عادية", default: false, visible: true },
+    { value: "5M/10M", name: "عالية", default: false, visible: true },
+    { value: "10M/20M", name: "عالية جداً VIP", default: false, visible: true }
   ],
   packages: [
     { title: "باقة 3 أيام", time: "مفتوح", size: "1 جيجا", speed: "اختيارية", price: "200 ريال" },

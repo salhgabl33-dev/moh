@@ -248,9 +248,11 @@
     try {
       if(!preview) {
         var url=new URL(endpoint(state.logoutUrl,"/logout"));
-        if(forget) url.searchParams.set("erase-cookie","yes");
+        // Explicit logout must revoke native auto-login for both button variants.
+        // The forget option only controls this page's locally saved card numbers.
+        url.searchParams.set("erase-cookie","on");
         var data=await request(url.href,{});
-        if(data.loggedIn === "yes") throw new Error("لم يؤكد الراوتر قطع الاتصال. حاول مرة أخرى.");
+        if(data.action !== "onLoggedOut" || data.loggedIn !== "no") throw new Error("لم يؤكد الراوتر قطع الاتصال. حاول مرة أخرى.");
       }
       if(forget){store.remove("hala2027.cards");renderCards();$("username").value="";}
       showLogin(); notice(preview ? "انتهت معاينة الجلسة التجريبية." : "تم قطع الاتصال بنجاح.");
